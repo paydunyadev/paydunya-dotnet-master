@@ -36,7 +36,7 @@ namespace Paydunya
 
             string jsonData = JsonConvert.SerializeObject(payload);
 
-            JObject JsonResult = utility.HttpPostJson(setup.GetOPRInvoiceUrl(), jsonData);
+            JObject JsonResult = utility.HttpPostJson(PayDunyaHelper.GetOPRInvoiceUrl(setup.Mode), jsonData);
             ResponseCode = JsonResult["response_code"].ToString();
             if (ResponseCode == "00")
             {
@@ -56,12 +56,15 @@ namespace Paydunya
 
         public bool Charge(string OPRToken, string ConfirmToken)
         {
-            JObject payload = new JObject();
-            payload.Add("token", OPRToken);
-            payload.Add("confirm_token", ConfirmToken);
-            string jsonData = JsonConvert.SerializeObject(payload);
-            JObject JsonResult = utility.HttpPostJson(setup.GetOPRChargeUrl(), jsonData);
-            bool result = false;
+
+            string jsonData = JsonConvert.SerializeObject(
+                new JObject
+                {
+                    { "token", OPRToken },
+                    { "confirm_token", ConfirmToken }
+                });
+
+            JObject JsonResult = utility.HttpPostJson(PayDunyaHelper.GetOPRChargeUrl(setup.Mode), jsonData);
 
             if (JsonResult.Count > 0)
             {
@@ -78,7 +81,7 @@ namespace Paydunya
 
                     ResponseText = JsonResult["response_text"].ToString();
                     ResponseCode = "00";
-                    result = true;
+                    return true;
                 }
                 else
                 {
@@ -94,7 +97,7 @@ namespace Paydunya
                 ResponseText = "Invoice Not Found";
             }
 
-            return result;
+            return false;
         }
     }
 }

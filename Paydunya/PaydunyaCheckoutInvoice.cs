@@ -177,8 +177,9 @@ namespace Paydunya
                     }
                  );
 
-            JObject jsonResult = utility.HttpPostJson(setup.GetInvoiceUrl(), jsonData);
+            JObject jsonResult = utility.HttpPostJson(PayDunyaHelper.GetInvoiceUrl(setup.Mode), jsonData);
             ResponseCode = jsonResult["response_code"].ToString();
+
             if (ResponseCode == "00")
             {
                 Status = PaydunyaCheckout.SUCCESS;
@@ -198,7 +199,7 @@ namespace Paydunya
 
         public bool Confirm(string token)
         {
-            JObject jsonData = utility.HttpGetRequest(setup.GetConfirmUrl() + token);
+            JObject jsonData = utility.HttpGetRequest(PayDunyaHelper.GetConfirmUrl(setup.Mode) + token);
             bool result = false;
 
             if (jsonData.Count > 0 && jsonData["status"] != null)

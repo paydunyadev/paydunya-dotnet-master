@@ -34,7 +34,7 @@ namespace Paydunya
             payload.Add("amount", Amount);
             string jsonData = JsonConvert.SerializeObject(payload);
 
-            JObject JsonResult = utility.HttpPostJson(setup.GetDirectPayCreditUrl(), jsonData);
+            JObject JsonResult = utility.HttpPostJson(PayDunyaHelper.GetDirectPayCreditUrl(setup.Mode), jsonData);
 
             ResponseCode = JsonResult["response_code"].ToString();
             if (ResponseCode == "00")
