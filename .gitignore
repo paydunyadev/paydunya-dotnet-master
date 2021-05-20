@@ -184,4 +184,3 @@ UpgradeLog*.htm
 
 # Microsoft Fakes
 FakesAssemblies/
-*.sqlite
