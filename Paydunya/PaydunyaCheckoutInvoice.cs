@@ -55,20 +55,24 @@ namespace Paydunya
 
         public void AddItem(string name, int quantity, double price, double total_price, string description = "")
         {
-            JObject item = new JObject();
-            item.Add("name", name);
-            item.Add("quantity", quantity);
-            item.Add("unit_price", price);
-            item.Add("total_price", total_price);
-            item.Add("description", description);
+            JObject item = new JObject
+            {
+                { "name", name },
+                { "quantity", quantity },
+                { "unit_price", price },
+                { "total_price", total_price },
+                { "description", description }
+            };
             items.Add("items_" + items.Count.ToString(), item);
         }
 
         public void AddTax(string name, double amount)
         {
-            JObject tax = new JObject();
-            tax.Add("name", name);
-            tax.Add("amount", amount);
+            JObject tax = new JObject
+            {
+                { "name", name },
+                { "amount", amount }
+            };
             taxes.Add("taxes_" + (string)taxes.Count.ToString(), tax);
         }
 
