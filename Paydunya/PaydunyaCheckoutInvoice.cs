@@ -164,7 +164,6 @@ namespace Paydunya
 
         public bool Create()
         {
-            bool result = false;
             JObject payload = new JObject();
             invoice.Add("items", items);
             invoice.Add("taxes", taxes);
@@ -182,14 +181,15 @@ namespace Paydunya
                 SetInvoiceUrl(jsonResult["response_text"].ToString());
                 ResponseText = jsonResult["description"].ToString();
                 Token = jsonResult["token"].ToString();
-                result = true;
+                return true;
             }
             else
             {
                 ResponseText = jsonResult["response_text"].ToString();
                 Status = PaydunyaCheckout.FAIL;
+
+                return false;
             }
-            return result;
         }
 
         public bool Confirm(string token)
