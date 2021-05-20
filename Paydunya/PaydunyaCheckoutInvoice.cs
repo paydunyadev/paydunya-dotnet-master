@@ -29,12 +29,7 @@ namespace Paydunya
             this.store = store;
             this.utility = new PaydunyaUtility(setup);
 
-            storeData.Add("name", this.store.Name);
-            storeData.Add("tagline", this.store.Tagline);
-            storeData.Add("postal_address", this.store.PostalAddress);
-            storeData.Add("website_url", this.store.WebsiteUrl);
-            storeData.Add("phone_number", this.store.PhoneNumber);
-            storeData.Add("logo_url", this.store.LogoUrl);
+            storeData = PayDunyaHelper.SetPaydunyaStore(store);
 
             if(!string.IsNullOrEmpty(this.store.CancelUrl))
             {
