@@ -8,7 +8,7 @@ namespace Paydunya
 {
     public class PaydunyaUtility
     {
-        private PaydunyaSetup setup;
+        private readonly PaydunyaSetup setup;
 
         public PaydunyaUtility(PaydunyaSetup setup)
         {

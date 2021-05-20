@@ -20,18 +20,20 @@ namespace Paydunya
 
             JObject payload = new JObject
             {
-                { "invoice_data", new JObject
-                    {
-                        { "invoice", invoice },
-                        { "store", storeData },
-                        { "actions", actions },
-                        { "custom_data", customData }
-                    }
+                { 
+                    "invoice_data", new JObject
+                        {
+                            { "invoice", invoice },
+                            { "store", storeData },
+                            { "actions", actions },
+                            { "custom_data", customData }
+                        }
                 },
-                { "opr_data", new JObject
-                    {
-                        { "account_alias", AccountAlias }
-                    }
+                { 
+                   "opr_data", new JObject
+                        {
+                            { "account_alias", AccountAlias }
+                        }
                 }
             };
 
