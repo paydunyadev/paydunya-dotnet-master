@@ -17,7 +17,7 @@ namespace Paydunya
 
         protected PaydunyaUtility utility;
 
-        private PaydunyaSetup setup;
+        private readonly PaydunyaSetup setup;
 
         public PaydunyaDirectPay(PaydunyaSetup setup)
         {
@@ -27,12 +27,12 @@ namespace Paydunya
 
         public bool CreditAccount(string PaydunyaAccount, double Amount)
         {
-            bool result = false;
-            JObject payload = new JObject();
-
-            payload.Add("account_alias", PaydunyaAccount);
-            payload.Add("amount", Amount);
-            string jsonData = JsonConvert.SerializeObject(payload);
+            string jsonData = JsonConvert.SerializeObject(
+                new JObject
+                {
+                    { "account_alias", PaydunyaAccount },
+                    { "amount", Amount }
+                });
 
             JObject JsonResult = utility.HttpPostJson(PayDunyaHelper.GetDirectPayCreditUrl(setup.Mode), jsonData);
 
@@ -43,14 +43,14 @@ namespace Paydunya
                 ResponseText = JsonResult["response_text"].ToString();
                 Description = JsonResult["description"].ToString();
                 TransactionId = JsonResult["transaction_id"].ToString();
-                result = true;
+                return true;
             }
             else
             {
                 ResponseText = JsonResult["response_text"].ToString();
                 Status = FAIL;
             }
-            return result;
+            return false;
         }
     }
 }
