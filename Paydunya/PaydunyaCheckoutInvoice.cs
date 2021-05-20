@@ -164,15 +164,20 @@ namespace Paydunya
 
         public bool Create()
         {
-            JObject payload = new JObject();
             invoice.Add("items", items);
             invoice.Add("taxes", taxes);
             invoice.Add("channels", channels);
-            payload.Add("invoice", invoice);
-            payload.Add("store", storeData);
-            payload.Add("actions", actions);
-            payload.Add("custom_data", customData);
-            string jsonData = JsonConvert.SerializeObject(payload);
+
+            string jsonData = JsonConvert.SerializeObject(
+                new JObject
+                    {
+                        { "invoice", invoice },
+                        { "store", storeData },
+                        { "actions", actions },
+                        { "custom_data", customData }
+                    }
+                 );
+
             JObject jsonResult = utility.HttpPostJson(setup.GetInvoiceUrl(), jsonData);
             ResponseCode = jsonResult["response_code"].ToString();
             if (ResponseCode == "00")
