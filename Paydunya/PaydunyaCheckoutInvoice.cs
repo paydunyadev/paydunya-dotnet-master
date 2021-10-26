@@ -29,12 +29,7 @@ namespace Paydunya
             this.store = store;
             this.utility = new PaydunyaUtility(setup);
 
-            storeData.Add("name", this.store.Name);
-            storeData.Add("tagline", this.store.Tagline);
-            storeData.Add("postal_address", this.store.PostalAddress);
-            storeData.Add("website_url", this.store.WebsiteUrl);
-            storeData.Add("phone_number", this.store.PhoneNumber);
-            storeData.Add("logo_url", this.store.LogoUrl);
+            storeData = PayDunyaHelper.SetPaydunyaStore(store);
 
             if(!string.IsNullOrEmpty(this.store.CancelUrl))
             {
@@ -55,20 +50,24 @@ namespace Paydunya
 
         public void AddItem(string name, int quantity, double price, double total_price, string description = "")
         {
-            JObject item = new JObject();
-            item.Add("name", name);
-            item.Add("quantity", quantity);
-            item.Add("unit_price", price);
-            item.Add("total_price", total_price);
-            item.Add("description", description);
+            JObject item = new JObject
+            {
+                { "name", name },
+                { "quantity", quantity },
+                { "unit_price", price },
+                { "total_price", total_price },
+                { "description", description }
+            };
             items.Add("items_" + items.Count.ToString(), item);
         }
 
         public void AddTax(string name, double amount)
         {
-            JObject tax = new JObject();
-            tax.Add("name", name);
-            tax.Add("amount", amount);
+            JObject tax = new JObject
+            {
+                { "name", name },
+                { "amount", amount }
+            };
             taxes.Add("taxes_" + (string)taxes.Count.ToString(), tax);
         }
 
@@ -164,37 +163,43 @@ namespace Paydunya
 
         public bool Create()
         {
-            bool result = false;
-            JObject payload = new JObject();
             invoice.Add("items", items);
             invoice.Add("taxes", taxes);
             invoice.Add("channels", channels);
-            payload.Add("invoice", invoice);
-            payload.Add("store", storeData);
-            payload.Add("actions", actions);
-            payload.Add("custom_data", customData);
-            string jsonData = JsonConvert.SerializeObject(payload);
-            JObject jsonResult = utility.HttpPostJson(setup.GetInvoiceUrl(), jsonData);
+
+            string jsonData = JsonConvert.SerializeObject(
+                new JObject
+                    {
+                        { "invoice", invoice },
+                        { "store", storeData },
+                        { "actions", actions },
+                        { "custom_data", customData }
+                    }
+                 );
+
+            JObject jsonResult = utility.HttpPostJson(PayDunyaHelper.GetInvoiceUrl(setup.Mode), jsonData);
             ResponseCode = jsonResult["response_code"].ToString();
+
             if (ResponseCode == "00")
             {
                 Status = PaydunyaCheckout.SUCCESS;
                 SetInvoiceUrl(jsonResult["response_text"].ToString());
                 ResponseText = jsonResult["description"].ToString();
                 Token = jsonResult["token"].ToString();
-                result = true;
+                return true;
             }
             else
             {
                 ResponseText = jsonResult["response_text"].ToString();
                 Status = PaydunyaCheckout.FAIL;
+
+                return false;
             }
-            return result;
         }
 
         public bool Confirm(string token)
         {
-            JObject jsonData = utility.HttpGetRequest(setup.GetConfirmUrl() + token);
+            JObject jsonData = utility.HttpGetRequest(PayDunyaHelper.GetConfirmUrl(setup.Mode) + token);
             bool result = false;
 
             if (jsonData.Count > 0 && jsonData["status"] != null)

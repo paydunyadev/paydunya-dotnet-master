@@ -46,6 +46,7 @@
     <Compile Include="PaydunyaCheckout.cs" />
     <Compile Include="PaydunyaCheckoutInvoice.cs" />
     <Compile Include="PaydunyaDirectPay.cs" />
+    <Compile Include="PayDunyaHelper.cs" />
     <Compile Include="PaydunyaOnsiteInvoice.cs" />
     <Compile Include="PaydunyaSetup.cs" />
     <Compile Include="PaydunyaStore.cs" />

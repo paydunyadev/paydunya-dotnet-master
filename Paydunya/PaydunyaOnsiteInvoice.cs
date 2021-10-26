@@ -15,28 +15,31 @@ namespace Paydunya
 
         public bool Create(string AccountAlias)
         {
-            bool result = false;
-            JObject invoice_data = new JObject();
-            JObject opr_data = new JObject();
-            JObject payload = new JObject();
-
-
             invoice.Add("items", items);
-            invoice.Add("taxes", taxes);
+            invoice.Add("taxes", taxes); 
 
-            invoice_data.Add("invoice", invoice);
-            invoice_data.Add("store", storeData);
-            invoice_data.Add("actions", actions);
-            invoice_data.Add("custom_data", customData);
-
-            opr_data.Add("account_alias", AccountAlias);
-
-            payload.Add("invoice_data", invoice_data);
-            payload.Add("opr_data", opr_data);
+            JObject payload = new JObject
+            {
+                { 
+                    "invoice_data", new JObject
+                        {
+                            { "invoice", invoice },
+                            { "store", storeData },
+                            { "actions", actions },
+                            { "custom_data", customData }
+                        }
+                },
+                { 
+                   "opr_data", new JObject
+                        {
+                            { "account_alias", AccountAlias }
+                        }
+                }
+            };
 
             string jsonData = JsonConvert.SerializeObject(payload);
 
-            JObject JsonResult = utility.HttpPostJson(setup.GetOPRInvoiceUrl(), jsonData);
+            JObject JsonResult = utility.HttpPostJson(PayDunyaHelper.GetOPRInvoiceUrl(setup.Mode), jsonData);
             ResponseCode = JsonResult["response_code"].ToString();
             if (ResponseCode == "00")
             {
@@ -44,24 +47,27 @@ namespace Paydunya
                 ResponseText = JsonResult["description"].ToString();
                 Token = JsonResult["token"].ToString();
                 InvoiceToken = JsonResult["invoice_token"].ToString();
-                result = true;
+                return true;
             }
             else
             {
                 ResponseText = JsonResult["response_text"].ToString();
                 Status = PaydunyaCheckout.FAIL;
             }
-            return result;
+            return false ;
         }
 
         public bool Charge(string OPRToken, string ConfirmToken)
         {
-            JObject payload = new JObject();
-            payload.Add("token", OPRToken);
-            payload.Add("confirm_token", ConfirmToken);
-            string jsonData = JsonConvert.SerializeObject(payload);
-            JObject JsonResult = utility.HttpPostJson(setup.GetOPRChargeUrl(), jsonData);
-            bool result = false;
+
+            string jsonData = JsonConvert.SerializeObject(
+                new JObject
+                {
+                    { "token", OPRToken },
+                    { "confirm_token", ConfirmToken }
+                });
+
+            JObject JsonResult = utility.HttpPostJson(PayDunyaHelper.GetOPRChargeUrl(setup.Mode), jsonData);
 
             if (JsonResult.Count > 0)
             {
@@ -78,7 +84,7 @@ namespace Paydunya
 
                     ResponseText = JsonResult["response_text"].ToString();
                     ResponseCode = "00";
-                    result = true;
+                    return true;
                 }
                 else
                 {
@@ -94,7 +100,7 @@ namespace Paydunya
                 ResponseText = "Invoice Not Found";
             }
 
-            return result;
+            return false;
         }
     }
 }

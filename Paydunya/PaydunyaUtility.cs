@@ -8,7 +8,7 @@ namespace Paydunya
 {
     public class PaydunyaUtility
     {
-        private PaydunyaSetup setup;
+        private readonly PaydunyaSetup setup;
 
         public PaydunyaUtility(PaydunyaSetup setup)
         {
@@ -17,7 +17,7 @@ namespace Paydunya
 
         public JObject HttpPostJson(string url, string payload)
         {
-            var bytes = Encoding.Default.GetBytes(payload);
+            var bytes = Encoding.UTF8.GetBytes(payload);
 
             WebClient client = new WebClient();
             client.Headers.Add(HttpRequestHeader.UserAgent,
